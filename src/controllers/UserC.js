@@ -4,7 +4,8 @@ class UserC {
   async create(req, res) {
     try {
       const novoUser = await User.create(req.body);
-      return res.json(novoUser);
+      const { id, nome, email } = novoUser;
+      return res.json({ id, nome, email });
     } catch (e) {
       console.log(e);
       return res.status(400).json({
@@ -16,9 +17,7 @@ class UserC {
   // index
   async index(req, res) {
     try {
-      const users = await User.findAll();
-      console.log('USER ID:', req.userId);
-      console.log('USER EMAIL:', req.userEmail);
+      const users = await User.findAll({ attributes: ['id', 'nome', 'email'] });
       res.json(users);
 
     } catch (e) {
@@ -29,7 +28,8 @@ class UserC {
   async show(req, res) {
     try {
       const user = await User.findByPk(req.params.id);
-      res.json(user);
+      const { id, nome, email } = user;
+      res.json({ id, nome, email });
 
     } catch (e) {
       return res.json(null);
@@ -38,12 +38,7 @@ class UserC {
   // update
   async update(req, res) {
     try {
-      if (!req.params.id) {
-        return res.status(400).json({
-          errors: ['ID não enviado'],
-        });
-      }
-      const user = await User.findByPk(req.params.id);
+      const user = await User.findByPk(req.userId);
 
       if (!user) {
         return res.status(400).json({
@@ -52,24 +47,20 @@ class UserC {
       }
 
       const novosDados = await user.update(req.body);
-      return res.json(novosDados);
+      const { id, nome, email } = novosDados;
+      return res.json({ id, nome, email });
 
     } catch (e) {
       console.log(e);
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message)
+        errors: e.errors.map((err) => err.message),
       });
     }
   }
   //delete
   async delete(req, res) {
     try {
-      if (!req.params.id) {
-        return res.status(400).json({
-          errors: ['ID não enviado'],
-        });
-      }
-      const user = await User.findByPk(req.params.id);
+      const user = await User.findByPk(req.userId);
 
       if (!user) {
         return res.status(400).json({
@@ -78,17 +69,15 @@ class UserC {
       }
 
       await user.destroy();
-      return res.json(user);
+      return res.json(null);
 
     } catch (e) {
       console.log(e);
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message)
+        errors: e.errors.map((err) => err.message),
       });
     }
   }
-
-
 };
 
 export default new UserC();
