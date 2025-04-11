@@ -7,6 +7,7 @@ import express from "express";
 import homeR from './src/routes/homeR';
 import userR from './src/routes/userR';
 import tokenRoutes from './src/routes/tokenRoutes';
+import alunoR from './src/routes/alunoR';
 
 class App {
   constructor() {
@@ -24,6 +25,7 @@ class App {
     this.app.use('/', homeR);
     this.app.use('/users/', userR);
     this.app.use('/tokens/', tokenRoutes);
+    this.app.use('/alunos', alunoR);
   }
 }
 
