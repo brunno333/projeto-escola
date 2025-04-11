@@ -2,26 +2,73 @@ import Aluno from '../models/Aluno';
 
 class AlunoC {
   async index(req, res) {
-    const alunos = await Aluno.findAll();
+    const alunos = await Aluno.findAll(
+      {
+        attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura', 'email']
+      });
     res.json(alunos);
   }
 
-  async delete(req, res) {
+  async create(req, res) {
     try {
-      if (!req.params.id) {
+      const aluno = await Aluno.create(req.body);
+      const { nome, sobrenome, idade, peso, altura, email } = aluno;
+
+      return res.json({ nome, sobrenome, idade, peso, altura, email });
+
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({
+        errors: e.errors.map((err) => err.message)
+      });
+    }
+  }
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
         return res.status(400).json({
           errors: ['ID não enviado'],
         });
       }
-      const aluno = await Aluno.findByPk(req.params.id);
+      const aluno = await Aluno.findByPk(id);
 
       if (!aluno) {
         return res.status(400).json({
-          errors: ['Usuário não existe'],
+          errors: ['Aluno não existe'],
         });
       }
 
-      await aluno.destroy();
+      const alunoAtualizado = await aluno.update(req.body);
+      const { nome, sobrenome, idade, peso, altura, email } = alunoAtualizado;
+
+      return res.json({ nome, sobrenome, idade, peso, altura, email });
+
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({
+        errors: e.errors.map((err) => err.message)
+      });
+    }
+  }
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({
+          errors: ['ID não enviado'],
+        });
+      }
+      const aluno = await Aluno.findByPk(id);
+
+      if (!aluno) {
+        return res.status(400).json({
+          errors: ['Aluno não existe'],
+        });
+      }
+
       return res.json(aluno);
 
     } catch (e) {
@@ -31,9 +78,35 @@ class AlunoC {
       });
     }
   }
+  async delete(req, res) {
+    try {
+      const { id } = req.params;
 
+      if (!id) {
+        return res.status(400).json({
+          errors: ['ID não enviado'],
+        });
+      }
+      const aluno = await Aluno.findByPk(id);
 
+      if (!aluno) {
+        return res.status(400).json({
+          errors: ['Aluno não existe'],
+        });
+      }
 
+      await aluno.destroy();
+      return res.json({
+        apagado: true,
+      });
+
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({
+        errors: e.errors.map((err) => err.message)
+      });
+    }
+  }
 }
 
 export default new AlunoC();

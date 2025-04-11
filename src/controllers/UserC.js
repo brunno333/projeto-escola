@@ -69,7 +69,9 @@ class UserC {
       }
 
       await user.destroy();
-      return res.json(null);
+      return res.json({
+        apagado: true,
+      });
 
     } catch (e) {
       console.log(e);
