@@ -78,6 +78,6 @@ class UserC {
       });
     }
   }
-};
+}
 
 export default new UserC();
