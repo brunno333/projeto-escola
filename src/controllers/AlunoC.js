@@ -1,10 +1,16 @@
 import Aluno from '../models/Aluno';
+import Foto from '../models/Foto';
 
 class AlunoC {
   async index(req, res) {
     const alunos = await Aluno.findAll(
       {
-        attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura', 'email']
+        attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura', 'email'],
+        order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+        include: {
+          model: Foto,
+          attributes: ['url', 'filename']
+        }
       });
     res.json(alunos);
   }
@@ -32,7 +38,7 @@ class AlunoC {
           errors: ['ID não enviado'],
         });
       }
-      const aluno = await Aluno.findByPk(id);
+      const aluno = await Aluno.findByPk(id,);
 
       if (!aluno) {
         return res.status(400).json({
@@ -61,7 +67,14 @@ class AlunoC {
           errors: ['ID não enviado'],
         });
       }
-      const aluno = await Aluno.findByPk(id);
+      const aluno = await Aluno.findByPk(id, {
+        attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura', 'email'],
+        order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+        include: {
+          model: Foto,
+          attributes: ['url', 'filename']
+        }
+      });
 
       if (!aluno) {
         return res.status(400).json({
